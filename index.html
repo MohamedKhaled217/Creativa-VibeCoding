@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>مخبز السنبلة</title>
+  <meta name="description" content="مخبز السنبلة: عيش وحلويات طازة كل يوم، من فرننا لبيتك.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@500;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf5ec;
+      --surface: #fffdf8;
+      --ink: #3b2a1e;
+      --muted: #7a6656;
+      --line: #e8dccb;
+      --wheat: #d9a441;
+      --crust: #a4532a;
+      --crust-ink: #fffaf2;
+      --open: #3f7d4e;
+      --closed: #a4532a;
+      --radius: 14px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #1d1712;
+        --surface: #261e17;
+        --ink: #f3e9db;
+        --muted: #b8a58f;
+        --line: #3a2e24;
+        --wheat: #e2b55a;
+        --crust: #d9774a;
+        --crust-ink: #1d1712;
+        --open: #7cc48d;
+        --closed: #e08a5f;
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Tajawal", system-ui, sans-serif;
+      font-size: 1.0625rem;
+      line-height: 1.75;
+    }
+    h1, h2, h3 { font-family: "Reem Kufi", "Tajawal", sans-serif; line-height: 1.3; }
+    a { color: inherit; }
+
+    .wrap { max-width: 960px; margin-inline: auto; padding-inline: 16px; }
+
+    /* Header */
+    header {
+      position: sticky; top: 0; z-index: 10;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+    }
+    .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-family: "Reem Kufi", sans-serif; font-size: 1.35rem; font-weight: 700; text-decoration: none; }
+    .brand svg { width: 28px; height: 28px; color: var(--wheat); }
+    nav { display: flex; gap: 20px; }
+    nav a { text-decoration: none; color: var(--muted); font-weight: 500; }
+    nav a:hover { color: var(--crust); }
+    @media (max-width: 600px) { nav { display: none; } }
+
+    /* Hero */
+    .hero { padding-block: 72px 56px; }
+    .eyebrow { color: var(--crust); font-weight: 700; letter-spacing: .02em; margin-bottom: 12px; }
+    .hero h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); max-width: 16ch; }
+    .hero p { color: var(--muted); font-size: 1.2rem; margin-top: 16px; max-width: 40ch; }
+    .status {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 28px; padding: 8px 16px;
+      border: 1px solid var(--line); border-radius: 999px;
+      background: var(--surface); font-weight: 500;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
+    .status[data-open="true"] .dot { background: var(--open); }
+    .status[data-open="false"] .dot { background: var(--closed); }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .btn {
+      display: inline-block; padding: 12px 24px; border-radius: 999px;
+      font-weight: 700; text-decoration: none; border: 2px solid var(--crust);
+    }
+    .btn.primary { background: var(--crust); color: var(--crust-ink); }
+    .btn.ghost { color: var(--crust); }
+
+    /* Sections */
+    section { padding-block: 56px; border-top: 1px solid var(--line); }
+    section h2 { font-size: 1.9rem; margin-bottom: 8px; }
+    .lede { color: var(--muted); margin-bottom: 28px; }
+
+    /* Menu */
+    .menu { list-style: none; display: grid; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .menu li { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+    .menu li:last-child { border-bottom: 0; }
+    .menu .name { font-weight: 700; font-size: 1.1rem; }
+    .menu .unit { color: var(--muted); font-size: .95rem; grid-column: 1; }
+    .menu .price { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-family: "Reem Kufi", sans-serif; font-size: 1.25rem; color: var(--crust); white-space: nowrap; }
+    .menu .note { grid-column: 1 / -1; color: var(--muted); font-size: .9rem; }
+
+    /* Info grid */
+    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+    .card h3 { font-size: 1.25rem; margin-bottom: 12px; }
+    .hours { width: 100%; border-collapse: collapse; }
+    .hours td { padding: 8px 0; border-bottom: 1px dashed var(--line); }
+    .hours tr:last-child td { border-bottom: 0; }
+    .hours td:last-child { text-align: left; color: var(--muted); }
+    .hours tr.today td { color: var(--crust); font-weight: 700; }
+    .facts { list-style: none; display: grid; gap: 10px; }
+    .facts b { display: block; color: var(--muted); font-weight: 500; font-size: .9rem; }
+    .ltr { direction: ltr; unicode-bidi: isolate; }
+
+    /* Not available */
+    .nope { list-style: none; display: grid; gap: 12px; }
+    .nope li { display: flex; gap: 12px; align-items: flex-start; }
+    .nope li::before { content: "✕"; flex: none; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: var(--line); color: var(--crust); font-size: .8rem; margin-top: 3px; }
+
+    footer { border-top: 1px solid var(--line); padding-block: 32px; color: var(--muted); font-size: .95rem; }
+    footer .disclaimer { margin-top: 8px; font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M12 22V8"/>
+          <path d="M12 8c0-2.5 1.5-4.5 3.5-5-.2 2.6-1.6 4.4-3.5 5Z"/>
+          <path d="M12 8c0-2.5-1.5-4.5-3.5-5 .2 2.6 1.6 4.4 3.5 5Z"/>
+          <path d="M12 13c1-2 3-3 5-3-.5 2.2-2.4 3.4-5 3Z"/>
+          <path d="M12 13c-1-2-3-3-5-3 .5 2.2 2.4 3.4 5 3Z"/>
+          <path d="M12 18c1-2 3-3 5-3-.5 2.2-2.4 3.4-5 3Z"/>
+          <path d="M12 18c-1-2-3-3-5-3 .5 2.2 2.4 3.4 5 3Z"/>
+        </svg>
+        مخبز السنبلة
+      </a>
+      <nav>
+        <a href="#menu">المنيو</a>
+        <a href="#visit">المواعيد والعنوان</a>
+        <a href="#notes">قبل ما تطلب</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap hero">
+      <p class="eyebrow">مخبز عيلة صغير</p>
+      <h1>عيش وحلويات طازة كل يوم، من فرننا لبيتك.</h1>
+      <p>بنخبز كل يوم الصبح بدري، ومفيش حاجة عندنا بايتة.</p>
+      <div class="status" id="status"><span class="dot"></span><span id="status-text">مواعيدنا تحت</span></div>
+      <div class="cta">
+        <a class="btn primary" href="#menu">شوف المنيو</a>
+        <a class="btn ghost" href="#visit">اطلب توصيل</a>
+      </div>
+    </div>
+
+    <section id="menu">
+      <div class="wrap">
+        <h2>المنتجات والأسعار</h2>
+        <p class="lede">كل حاجة معمولة النهارده.</p>
+        <ul class="menu">
+          <li><span class="name">عيش فينو</span><span class="unit">5 أرغفة</span><span class="price">15 جنيه</span></li>
+          <li><span class="name">عيش بلدي مخصوص</span><span class="unit">5 أرغفة</span><span class="price">10 جنيه</span></li>
+          <li><span class="name">كرواسون سادة</span><span class="unit">القطعة</span><span class="price">20 جنيه</span></li>
+          <li><span class="name">كرواسون شوكولاتة</span><span class="unit">القطعة</span><span class="price">28 جنيه</span></li>
+          <li><span class="name">بسبوسة</span><span class="unit">الكيلو</span><span class="price">160 جنيه</span></li>
+          <li>
+            <span class="name">تورتة عيد ميلاد</span><span class="unit">حسب الطلب</span><span class="price">من 450 جنيه</span>
+            <span class="note">بالحجز قبلها بيومين.</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="visit">
+      <div class="wrap">
+        <h2>زورنا أو نوصّلك</h2>
+        <p class="lede">بنوصّل في حدود 3 كيلو من المخبز.</p>
+        <div class="grid">
+          <div class="card">
+            <h3>المواعيد</h3>
+            <table class="hours">
+              <tr data-days="6,0,1,2,3,4"><td>السبت للخميس</td><td>7 الصبح – 11 بالليل</td></tr>
+              <tr data-days="5"><td>الجمعة</td><td>2 الضهر – 11 بالليل</td></tr>
+            </table>
+          </div>
+          <div class="card">
+            <h3>العنوان والتواصل</h3>
+            <ul class="facts">
+              <li><b>العنوان</b>12 شارع النخيل، جنب الصيدلية</li>
+              <li><b>الموبايل</b><span class="ltr">0100 000 0000</span></li>
+              <li><b>التوصيل</b>في حدود 3 كيلو، والطلب الأقل 100 جنيه</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="notes">
+      <div class="wrap">
+        <h2>قبل ما تطلب</h2>
+        <p class="lede">عشان نكون واضحين معاك من الأول:</p>
+        <ul class="nope">
+          <li>مفيش أكل من غير جلوتين.</li>
+          <li>مفيش دفع أونلاين: الدفع كاش أو إنستاباي عند الاستلام.</li>
+          <li>مفيش منيو إنجليزي.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>© مخبز السنبلة</p>
+      <p class="disclaimer">بيانات خيالية للتدريب: المخبز والعنوان ورقم الموبايل والأسعار مش حقيقيين.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Open hours per weekday (0 = Sunday … 5 = Friday, 6 = Saturday), in 24h.
+    const HOURS = { 5: [14, 23] };
+    const DEFAULT_HOURS = [7, 23];
+
+    const now = new Date();
+    const day = now.getDay();
+    const [open, close] = HOURS[day] || DEFAULT_HOURS;
+    const hour = now.getHours() + now.getMinutes() / 60;
+    const isOpen = hour >= open && hour < close;
+
+    const status = document.getElementById("status");
+    status.dataset.open = isOpen;
+    document.getElementById("status-text").textContent = isOpen
+      ? "فاتحين دلوقتي، لحد 11 بالليل"
+      : (hour < open ? "قافلين دلوقتي، بنفتح النهارده " : "قافلين دلوقتي، بنفتح بكره ")
+        + ((hour < open ? HOURS[day] : HOURS[(day + 1) % 7]) ? "2 الضهر" : "7 الصبح");
+
+    document.querySelectorAll(".hours tr").forEach(row => {
+      if (row.dataset.days.split(",").map(Number).includes(day)) row.classList.add("today");
+    });
+  </script>
+</body>
+</html>

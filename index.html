@@ -120,6 +120,21 @@
     .nope li { display: flex; gap: 12px; align-items: flex-start; }
     .nope li::before { content: "✕"; flex: none; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: var(--line); color: var(--crust); font-size: .8rem; margin-top: 3px; }
 
+    /* Contact form */
+    .form { display: grid; gap: 16px; max-width: 560px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+    .form label { display: grid; gap: 6px; font-weight: 500; }
+    .form input, .form textarea {
+      font: inherit; color: var(--ink); background: var(--bg);
+      border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; width: 100%;
+    }
+    .form textarea { min-height: 120px; resize: vertical; }
+    .form input:focus, .form textarea:focus { outline: 2px solid var(--wheat); outline-offset: 1px; }
+    .form .hint { color: var(--muted); font-size: .85rem; font-weight: 400; }
+    .form button { justify-self: start; font: inherit; cursor: pointer; }
+    .form button:disabled { opacity: .6; cursor: wait; }
+    .form-error { color: var(--closed); font-weight: 500; }
+    .form-done { max-width: 560px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; font-weight: 700; font-size: 1.15rem; color: var(--open); }
+
     footer { border-top: 1px solid var(--line); padding-block: 32px; color: var(--muted); font-size: .95rem; }
     footer .disclaimer { margin-top: 8px; font-size: .85rem; }
   </style>
@@ -143,6 +158,7 @@
         <a href="#menu">المنيو</a>
         <a href="#visit">المواعيد والعنوان</a>
         <a href="#notes">قبل ما تطلب</a>
+        <a href="#contact">كلّمنا</a>
       </nav>
     </div>
   </header>
@@ -212,6 +228,28 @@
         </ul>
       </div>
     </section>
+
+    <section id="contact">
+      <div class="wrap">
+        <h2>ابعتلنا رسالة</h2>
+        <p class="lede">سيب اسمك ورقمك ورسالتك، وإحنا هنكلّمك.</p>
+        <form class="form" id="contact-form">
+          <label>الاسم
+            <input name="name" type="text" required maxlength="100" autocomplete="name">
+          </label>
+          <label>الموبايل
+            <input name="phone" type="tel" required inputmode="tel" autocomplete="tel" class="ltr" placeholder="01xxxxxxxxx">
+            <span class="hint">رقم موبايل مصري من 11 رقم.</span>
+          </label>
+          <label>الرسالة
+            <textarea name="message" required maxlength="2000"></textarea>
+          </label>
+          <p class="form-error" id="form-error" role="alert" hidden></p>
+          <button class="btn primary" type="submit">ابعت</button>
+        </form>
+        <p class="form-done" id="form-done" role="status" hidden>وصلتنا رسالتك، هنكلّمك في نفس اليوم.</p>
+      </div>
+    </section>
   </main>
 
   <footer>
@@ -241,6 +279,67 @@
 
     document.querySelectorAll(".hours tr").forEach(row => {
       if (row.dataset.days.split(",").map(Number).includes(day)) row.classList.add("today");
+    });
+
+    // Contact form → Supabase table "messages" (insert-only via RLS).
+    // Only the publishable key belongs here. Never put the secret key in this page.
+    const SUPABASE_URL = "https://kxofxepektrqypukxqaz.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_DnD36ixZd3S7fX99qJ2DcA_0mdrh3KR";
+
+    const form = document.getElementById("contact-form");
+    const formError = document.getElementById("form-error");
+    const phoneInput = form.elements.phone;
+
+    // Accept Arabic-Indic digits, spaces and dashes; store plain 01xxxxxxxxx.
+    const normalizePhone = value => value
+      .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
+      .replace(/[\s-]/g, "");
+
+    phoneInput.addEventListener("input", () => phoneInput.setCustomValidity(""));
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      formError.hidden = true;
+
+      const phone = normalizePhone(phoneInput.value);
+      if (!/^01[0125][0-9]{8}$/.test(phone)) {
+        phoneInput.setCustomValidity("اكتب رقم موبايل مصري صحيح من 11 رقم، زي 01001234567.");
+        phoneInput.reportValidity();
+        return;
+      }
+
+      const name = form.elements.name.value.trim();
+      const message = form.elements.message.value.trim();
+      if (!name || !message) {
+        formError.textContent = "من فضلك املا كل الخانات.";
+        formError.hidden = false;
+        return;
+      }
+
+      const button = form.querySelector("button");
+      button.disabled = true;
+      try {
+        if (!SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_")) throw new Error("Missing publishable key");
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/messages`, {
+          method: "POST",
+          headers: {
+            apikey: SUPABASE_PUBLISHABLE_KEY,
+            "Content-Type": "application/json",
+            // No read policy exists, so don't ask for the inserted row back.
+            Prefer: "return=minimal",
+          },
+          body: JSON.stringify({ name, phone, message }),
+        });
+        if (!res.ok) throw new Error(`Supabase ${res.status}`);
+        form.hidden = true;
+        document.getElementById("form-done").hidden = false;
+      } catch (err) {
+        console.error(err);
+        formError.textContent = "حصلت مشكلة والرسالة ما اتبعتتش. جرّب تاني أو كلّمنا على الموبايل.";
+        formError.hidden = false;
+      } finally {
+        button.disabled = false;
+      }
     });
   </script>
 </body>
